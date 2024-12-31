@@ -7,6 +7,7 @@ const client = new Client({
     puppeteer: {
         executablePath: process.env.CHROME_EXECUTABLE_PATH,
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        timeout: 60000, 
     }
 });
 
