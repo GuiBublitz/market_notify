@@ -1,8 +1,11 @@
-const { Client } = require('whatsapp-web.js');
+require('dotenv').config();
+const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 
 const client = new Client({
+    authStrategy: new LocalAuth({ clientId: "Notifier" }),
     puppeteer: {
+        executablePath: process.env.CHROME_EXECUTABLE_PATH,
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
     }
 });
