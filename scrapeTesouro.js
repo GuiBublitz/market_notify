@@ -3,6 +3,7 @@ const fs = require('fs');
 
 const URL = 'https://www.tesourodireto.com.br/titulos/precos-e-taxas.htm';
 const DATA_FILE = './tesouro_data.json';
+const CHANGES_FILE = './tesouro_changes.json';
 
 function loadOldData() {
     if (fs.existsSync(DATA_FILE)) {
@@ -11,8 +12,8 @@ function loadOldData() {
     return null;
 }
 
-function saveData(data) {
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+function saveData(data, filePath) {
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 }
 
 function compareData(oldData, newData) {
@@ -59,16 +60,58 @@ async function scrapeTesouro() {
     const oldData = loadOldData();
     const changes = compareData(oldData, data);
 
+    saveData(data, DATA_FILE);
+
     if (changes.length > 0) {
-        console.log('Alterações detectadas:', changes);
-        saveData(data);
-    } else if (!oldData) {
-        console.log('Dados iniciais capturados:');
-        console.table(data);
-        saveData(data);
-    } else {
-        console.log('Nenhuma alteração detectada.');
+        saveData(changes, CHANGES_FILE);
     }
+
+    return changes;
 }
 
-scrapeTesouro().catch(console.error);
+const formatarMensagemTesouro = (dados, tipo = null) => {
+    let mensagem = tipo 
+        ? `Aqui estão os títulos do Tesouro (${tipo}):\n\n`
+        : `Aqui estão os títulos do Tesouro:\n\n`;
+
+    const dadosFiltrados = tipo 
+        ? dados.filter(titulo => titulo.titulo.toLowerCase().includes(tipo.toLowerCase()))
+        : dados;
+
+    if (dadosFiltrados.length === 0) {
+        mensagem += tipo
+            ? `Não há títulos do tipo "${tipo}" disponíveis ou alterados.\n`
+            : `Não há títulos alterados disponíveis no momento.\n`;
+    } else {
+        dadosFiltrados.forEach(titulo => {
+            mensagem += `*${titulo.titulo.replace(/\t/g, '').trim()}*\n`;
+            mensagem += `- Rentabilidade: ${titulo.rentabilidade}\n`;
+            mensagem += `- Investimento Mínimo: ${titulo.investimentoMinimo}\n`;
+            mensagem += `- Preço Unitário: ${titulo.precoUnitario}\n`;
+            mensagem += `- Vencimento: ${titulo.vencimento}\n`;
+            mensagem += '\n';
+        });
+    }
+
+    return mensagem;
+};
+
+const obterDadosTesouro = async (tipo = null) => {
+    try {
+        if (!fs.existsSync(DATA_FILE)) {
+            return "Nenhuma alteração foi detectada nos dados do Tesouro até o momento.";
+        }
+
+        const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
+        if (data.length === 0) {
+            return "Nenhuma alteração foi detectada nos dados do Tesouro.";
+        }
+
+        return formatarMensagemTesouro(data, tipo);
+    } catch (error) {
+        console.error("Erro ao processar os dados do Tesouro:", error);
+        return "Houve um erro ao obter os dados do Tesouro.";
+    }
+};
+
+module.exports = { scrapeTesouro, obterDadosTesouro, formatarMensagemTesouro };
