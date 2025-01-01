@@ -18,11 +18,33 @@ function saveData(data, filePath) {
 
 function compareData(oldData, newData) {
     if (!oldData) return newData;
-    return newData.filter(newItem => {
-        const oldItem = oldData.find(item => item.titulo === newItem.titulo);
-        return !oldItem || JSON.stringify(oldItem) !== JSON.stringify(newItem);
-    });
+
+    return newData
+        .map(newItem => {
+            const oldItem = oldData.find(item => item.titulo === newItem.titulo);
+
+            if (!oldItem || JSON.stringify(oldItem) === JSON.stringify(newItem)) {
+                return null;
+            }
+
+            const updatedItem = {
+                titulo: newItem.titulo,
+                rentabilidade: newItem.rentabilidade,
+                investimentoMinimo: newItem.investimentoMinimo,
+                precoUnitario: newItem.precoUnitario,
+                vencimento: newItem.vencimento
+            };
+
+            if (oldItem.rentabilidade !== newItem.rentabilidade) {
+                updatedItem["rentabilidade anterior"] = oldItem.rentabilidade;
+                updatedItem["nova rentabilidade"] = newItem.rentabilidade;
+            }
+
+            return updatedItem;
+        })
+        .filter(item => item !== null);
 }
+
 
 async function scrapeTesouro() {
     const browser = await puppeteer.launch({
@@ -62,10 +84,6 @@ async function scrapeTesouro() {
 
     saveData(data, DATA_FILE);
 
-    if (changes.length > 0) {
-        saveData(changes, CHANGES_FILE);
-    }
-
     return changes;
 }
 
@@ -85,7 +103,14 @@ const formatarMensagemTesouro = (dados, tipo = null) => {
     } else {
         dadosFiltrados.forEach(titulo => {
             mensagem += `*${titulo.titulo.replace(/\t/g, '').trim()}*\n`;
-            mensagem += `- Rentabilidade: ${titulo.rentabilidade}\n`;
+
+            if (titulo["rentabilidade anterior"] && titulo["nova rentabilidade"]) {
+                mensagem += `- Rentabilidade Anterior: ${titulo["rentabilidade anterior"]}\n`;
+                mensagem += `- Nova Rentabilidade: ${titulo["nova rentabilidade"]}\n`;
+            } else {
+                mensagem += `- Rentabilidade: ${titulo.rentabilidade}\n`;
+            }
+
             mensagem += `- Investimento Mínimo: ${titulo.investimentoMinimo}\n`;
             mensagem += `- Preço Unitário: ${titulo.precoUnitario}\n`;
             mensagem += `- Vencimento: ${titulo.vencimento}\n`;

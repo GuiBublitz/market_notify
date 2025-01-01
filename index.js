@@ -18,9 +18,11 @@ client.on('ready', () => {
     setInterval(()=>{
         scrapeTesouro()
             .then(async (data)=> {
-                console.log(data);
-                console.log("Dados extraídos do tesouro direto!");
+                let whatsState = await client.getState();
+                console.log("Whatsapp state: ", whatsState);
+                console.log("Dados tesouro alterados: ", data);
 
+                if (whatsState != "CONNECTED") return;
                 if (!data || data.length == 0) return;
 
                 client.sendMessage("120363366937157164@g.us",
@@ -29,7 +31,7 @@ client.on('ready', () => {
                 );
             })
             .catch(console.error);
-    }, 1800000)
+    }, 30000 * 1)
 });
 
 client.on('qr', qr => {
