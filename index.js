@@ -3,12 +3,13 @@ const { Client, LocalAuth } = require('whatsapp-web.js');
 const { scrapeTesouro, obterDadosTesouro, formatarMensagemTesouro } = require('./scrapeTesouro.js');
 const qrcode = require('qrcode-terminal');
 
+const GROUP_TESOURO_DIRETO_ID = "120363366937157164@g.us";
+
 const client = new Client({
     authStrategy: new LocalAuth({ clientId: "Notifier" }),
     puppeteer: {
         executablePath: process.env.CHROME_EXECUTABLE_PATH,
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        timeout: 60000, 
     }
 });
 
@@ -16,6 +17,9 @@ client.on('ready', () => {
     console.log('Bot Conectado!');
 
     setInterval(()=>{
+        client.sendPresenceAvailable();
+        client.sendSeen(GROUP_TESOURO_DIRETO_ID);
+
         scrapeTesouro()
             .then(async (data)=> {
                 let whatsState = await client.getState();
@@ -25,7 +29,7 @@ client.on('ready', () => {
                 if (whatsState != "CONNECTED") return;
                 if (!data || data.length == 0) return;
 
-                client.sendMessage("120363366937157164@g.us",
+                client.sendMessage(GROUP_TESOURO_DIRETO_ID,
                     "*Existem novos valores no Tesouro direto, confira:* \n\n" +
                     formatarMensagemTesouro(data)
                 );
