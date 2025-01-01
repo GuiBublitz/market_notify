@@ -35,7 +35,7 @@ client.on('ready', () => {
                 );
             })
             .catch(console.error);
-    }, 60000 * 5)
+    }, 60000)
 });
 
 client.on('qr', qr => {
