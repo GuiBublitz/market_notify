@@ -6,6 +6,8 @@ const Notify = require('./Notify');
 const routines = require('./routines');
 const notify  = new Notify(whatsappClient);
 
+const intervalTime = process.env.NODE_ENV === 'production' ? 60000 * 3 : 10000;
+
 setInterval(async () => {
     let whatsappState = await whatsappClient.getState();
     if (whatsappState != "CONNECTED") return false;
@@ -14,4 +16,4 @@ setInterval(async () => {
         notify.runRoutine(routine);
     });
     
-}, 10000);
+}, intervalTime);
