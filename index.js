@@ -12,4 +12,4 @@ setInterval(async () => {
 
     notify.runRoutine(routines.TESOURO_DIRETO);
     notify.runRoutine(routines.BITCOIN);
-}, 60000);
+}, 60000 * 3);
