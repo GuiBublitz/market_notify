@@ -10,6 +10,8 @@ setInterval(async () => {
     let whatsappState = await whatsappClient.getState();
     if (whatsappState != "CONNECTED") return false;
 
-    notify.runRoutine(routines.TESOURO_DIRETO);
-    notify.runRoutine(routines.BITCOIN);
-}, 60000 * 3);
+    Object.keys(routines).forEach(routine => {
+        notify.runRoutine(routine);
+    });
+    
+}, 10000);
