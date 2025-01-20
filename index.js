@@ -6,7 +6,10 @@ const Notify = require('./Notify');
 const routines = require('./routines');
 const notify  = new Notify(whatsappClient);
 
-setInterval(() => {
+setInterval(async () => {
+    let whatsappState = await whatsappClient.getState();
+    if (whatsappState != "CONNECTED") return false;
+
     notify.runRoutine(routines.TESOURO_DIRETO);
     notify.runRoutine(routines.BITCOIN);
-}, 5000);
+}, 60000);

@@ -7,15 +7,19 @@ class Notify {
     }
 
     async runRoutine(routine) {
-        let scraperData = scraper[routine]();
-                
+        const now = new Date();
+        const timestamp = now.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+        
+        let scraperData = await scraper[routine]();
+                    
         if (!scraperData) {
-            console.log(routine, 'No data found');
+            console.log(`[${timestamp}] ${routine} - No data found`);
             return;
         }
-
+    
         this.whatsappClient.notify(scraperData);
     }
+    
 
 }
 

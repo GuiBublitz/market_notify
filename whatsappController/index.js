@@ -19,17 +19,18 @@ client.on('qr', qr => {
     qrcode.generate(qr, {small: true});
 });
 
-client.initialize();
-
 client.notify = async (message) => {
     let whatsappState = await client.getState();
 
     if (whatsappState != "CONNECTED") {
         console.log('WHATSAPP ERROR| STATE: ', whatsappState);
+        return false;
     };
 
     client.sendMessage(WHATSAPP_GROUP_ID, message);    
 }
+
+client.initialize();
 
 module.exports = {
     whatsappClient: client,
