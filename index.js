@@ -17,12 +17,33 @@ if (!fs.existsSync(databasePath)) {
     console.log('Created "database" folder');
 }
 
-setInterval(async () => {
-    let whatsappState = await whatsappClient.getState();
-    if (whatsappState != "CONNECTED") return false;
+let isRunning = false;
 
-    for (const routine of Object.keys(routines)) {
-        await notify.runRoutine(routine);
+async function runRoutines() {
+    if (isRunning) {
+        console.log('Previous routines still running, skipping this interval...');
+        return;
     }
 
-}, intervalTime);
+    isRunning = true;
+
+    let whatsappState = await whatsappClient.getState();
+    if (whatsappState !== "CONNECTED") {
+        isRunning = false;
+        return;
+    }
+
+    for (const routine of Object.keys(routines)) {
+        try {
+            await notify.runRoutine(routine);
+        } catch (err) {
+            console.error(`Error running routine ${routine}:`, err);
+        }
+    }
+
+    isRunning = false;
+
+    setTimeout(runRoutines, intervalTime);
+}
+
+runRoutines();
