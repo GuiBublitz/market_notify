@@ -17,10 +17,9 @@ class Notify {
             return;
         }
     
-        this.whatsappClient.notify(scraperData);
+        this.whatsappClient.notify(routine, scraperData);
     }
     
-
 }
 
 module.exports = Notify;

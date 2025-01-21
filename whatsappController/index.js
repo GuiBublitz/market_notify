@@ -1,7 +1,10 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 
-const WHATSAPP_GROUP_ID = process.env.WHATSAPP_GROUP_ID;
+const WHATSAPPGROUPS = {
+    "TESOURO_DIRETO": process.env.WHATSAPP_GROUP_ID_TESOURODIRETO,
+    "BITCOIN": process.env.WHATSAPP_GROUP_ID_BITCOIN,
+};
 
 const client = new Client({
     authStrategy: new LocalAuth({ clientId: "Notifier" }),
@@ -19,15 +22,18 @@ client.on('qr', qr => {
     qrcode.generate(qr, {small: true});
 });
 
-client.notify = async (message) => {
+client.notify = async (group, message) => {
     let whatsappState = await client.getState();
 
     if (whatsappState != "CONNECTED") {
         console.log('WHATSAPP ERROR| STATE: ', whatsappState);
         return false;
     };
-
-    client.sendMessage(WHATSAPP_GROUP_ID, message);    
+    try {
+        client.sendMessage(WHATSAPPGROUPS[group], message);    
+    } catch (error) {
+        console.error(`Error sending message to ${group}:`, error.message);
+    }
 }
 
 client.initialize();
