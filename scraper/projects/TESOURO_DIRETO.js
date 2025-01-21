@@ -99,10 +99,18 @@ module.exports = async function () {
             });
         }
 
-        await browser.close();
     } catch (error) {
         console.error('Erro ao fazer scraping:', error);
     } finally {
+
+        if (browser) {
+            try {
+                await browser.close();
+            } catch (closeError) {
+                console.error('Erro ao fechar o navegador:', closeError);
+            }
+        }
+
         db.close((err) => {
             if (err) {
                 console.error('Erro ao fechar o banco de dados:', err.message);
