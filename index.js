@@ -9,12 +9,11 @@ const routines = require('./routines');
 const notify  = new Notify(whatsappClient);
 
 const intervalTime = process.env.NODE_ENV === 'production' ? 60000 * 3 : 30000;
-console.log('Routines Interval Time: ', intervalTime);
+console.log('ROUTINES INTERVAL TIME: ', intervalTime);
 
 const databasePath = path.resolve(__dirname, 'scraper/projects/database');
 if (!fs.existsSync(databasePath)) {
     fs.mkdirSync(databasePath, { recursive: true });
-    console.log('Created "database" folder');
 }
 
 let isRunning = false;
@@ -46,4 +45,8 @@ async function runRoutines() {
     setTimeout(runRoutines, intervalTime);
 }
 
-runRoutines();
+whatsappClient.on('ready', () => {
+    console.log('WHATSAPP CONNECTED!');
+    console.log('STARTING ROUTINES!');
+    runRoutines();
+});
