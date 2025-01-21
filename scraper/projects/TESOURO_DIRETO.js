@@ -24,8 +24,9 @@ module.exports = async function () {
 
     let message = "";
 
+    let browser = null; 
     try {
-        let browser = await puppeteer.launch({
+        browser = await puppeteer.launch({
             headless: true,
             args: ['--no-sandbox', '--disable-setuid-sandbox']
         });
