@@ -63,7 +63,10 @@ module.exports = async function () {
                 }
 
                 if (row) {
-                    if (row.rentabilidade !== item.rentabilidade) {
+                    const oldRentabilidade = parseRentabilidade(row.rentabilidade);
+                    const newRentabilidade = parseRentabilidade(item.rentabilidade);
+
+                    if (oldRentabilidade < newRentabilidade) {
                         message += "*"
                             + item.titulo 
                             + "*\n"
@@ -109,3 +112,8 @@ module.exports = async function () {
         return message || false;
     }
 };
+
+function parseRentabilidade(value) {
+    const cleanValue = value.replace(/[^\d.-]/g, '');
+    return parseFloat(cleanValue);
+}
