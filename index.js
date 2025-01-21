@@ -21,8 +21,8 @@ setInterval(async () => {
     let whatsappState = await whatsappClient.getState();
     if (whatsappState != "CONNECTED") return false;
 
-    Object.keys(routines).forEach(routine => {
-        notify.runRoutine(routine);
-    });
-    
+    for (const routine of Object.keys(routines)) {
+        await notify.runRoutine(routine);
+    }
+
 }, intervalTime);
