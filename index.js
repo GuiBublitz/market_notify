@@ -45,8 +45,13 @@ async function runRoutines() {
     setTimeout(runRoutines, intervalTime);
 }
 
+let hasRunRoutines = false;
 whatsappClient.on('ready', () => {
     console.log('WHATSAPP CONNECTED!');
-    console.log('STARTING ROUTINES!');
-    runRoutines();
+
+    if (!hasRunRoutines) {
+        console.log('STARTING ROUTINES!');
+        runRoutines();
+        hasRunRoutines = true;
+    }
 });
