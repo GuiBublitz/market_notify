@@ -62,7 +62,7 @@ module.exports = async function () {
 
             return (
                 "NEWS - " + data.title +
-                "\n\n    " + data.link
+                "\n\n" + data.link
             );
         }
     } catch (error) {
