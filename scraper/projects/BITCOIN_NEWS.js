@@ -1,3 +1,4 @@
+const path = require('path');
 const puppeteer = require('puppeteer');
 const sqlite3 = require('sqlite3').verbose();
 
