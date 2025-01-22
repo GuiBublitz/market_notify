@@ -4,6 +4,7 @@ const qrcode = require('qrcode-terminal');
 const WHATSAPPGROUPS = {
     "TESOURO_DIRETO": process.env.WHATSAPP_GROUP_ID_TESOURODIRETO,
     "BITCOIN": process.env.WHATSAPP_GROUP_ID_BITCOIN,
+    "BITCOIN_NEWS": process.env.WHATSAPP_GROUP_ID_BITCOIN,
 };
 
 const client = new Client({
@@ -26,7 +27,7 @@ client.notify = async (group, message) => {
         return false;
     };
     try {
-        client.sendMessage(WHATSAPPGROUPS[group], message);    
+        client.sendMessage(WHATSAPPGROUPS[group], message);
     } catch (error) {
         console.error(`Error sending message to ${group}:`, error.message);
     }
